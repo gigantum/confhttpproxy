@@ -1,0 +1,8 @@
+version: '2'
+services:
+    confhttpproxy:
+        build: .
+        ports:
+            - "7999:80"
+        volumes:
+            - .:/app
