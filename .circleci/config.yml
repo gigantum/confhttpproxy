@@ -1,32 +1,32 @@
 version: 2
 jobs:
-  build:
-    docker:
-      - image: ubuntu:18.04
+    build:
+        docker:
+            - image: ubuntu:18.04
     steps:
-      - checkout
+        - checkout
 
-      - run:
-        name: Update Ubuntu
-        command: apt-get update && apt-get -y install curl gnupg gnupg1 gnupg2 python3-pip
+        - run:
+            name: Update Ubuntu
+            command: apt-get update && apt-get -y install curl gnupg gnupg1 gnupg2 python3-pip
 
-      - run:
-        name: Download conf http proxy package
-        command: curl -sL https://deb.nodesource.com/setup_8.x | bash
+        - run:
+            name: Download conf http proxy package
+            command: curl -sL https://deb.nodesource.com/setup_8.x | bash
 
-      - run:
-        name: Install conf http proxy
-        command: apt-get -y install nodejs && npm install -g configurable-http-proxy
+        - run:
+            name: Install conf http proxy
+            command: apt-get -y install nodejs && npm install -g configurable-http-proxy
 
-      - run:
-        name: Get rid of Python 2
-        command: rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
+        - run:
+            name: Get rid of Python 2
+            command: rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
 
-      - run:
-        name: Install Deps
-        command: pip install -r requirements.txt
+        - run:
+            name: Install Deps
+            command: pip install -r requirements.txt
 
-      - run:
-        name: Run Unit Tests
-        command: pytest .
+        - run:
+            name: Run Unit Tests
+            command: pytest .
         
