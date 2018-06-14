@@ -43,7 +43,7 @@ class ProxyRouter(object):
                                    f'{r.status_code} {r.text}')
 
     def remove(self, prefix: str) -> None:
-        r = requests.delete(f'http://{api_host}:{api_port}/api/routes/{prefix}')
+        r = requests.delete(f'http://{self.api_host}:{self.api_port}/api/routes/{prefix}')
         if r.status_code == 204:
             return None
         raise ProxyRouterException(f'Cannot delete route {prefix}: '
