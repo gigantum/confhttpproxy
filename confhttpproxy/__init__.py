@@ -26,6 +26,10 @@ class ProxyRouter(object):
         self.encode = lambda p: base64.urlsafe_b64encode(p.encode()).decode()
 
     @property
+    def is_null_proxy(self) -> bool:
+        return False
+
+    @property
     def routes(self) -> Dict[str, Dict[str, str]]:
         r = requests.get(f'http://{self.api_host}:{self.api_port}/api/routes')
         if r.status_code != 200:
@@ -57,6 +61,10 @@ class NullRouter(ProxyRouter):
 
     def __init__(self, *args, **kwargs) -> None:
         pass
+
+    @property
+    def is_null_proxy(self) -> bool:
+        return True
 
     @property
     def routes(self) -> Dict[str, Dict[str, str]]:

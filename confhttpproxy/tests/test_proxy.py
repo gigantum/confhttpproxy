@@ -40,6 +40,7 @@ def start_proxy():
 def test_null1():
     pr = ProxyRouter.get_proxy()
     assert type(pr) == NullRouter
+    assert pr.is_null_proxy is True
 
 
 def test_no_routes(config_fixture, start_proxy):
@@ -52,6 +53,7 @@ def test_connect_to_internal_process_via_proxy_1(config_fixture, start_proxy):
     """ Create a route to proxy but specifify the route prefix. """
     pr = ProxyRouter.get_proxy(config_fixture)
     pfx, host = pr.add("http://localhost:5555", 'test/server/1')
+    assert host == 'http://localhost:5555')
     assert pfx in [p[1:] for p in pr.routes.keys()]
     assert 'spool' in requests.get(f'http://localhost/{pfx}').text
 
@@ -72,3 +74,4 @@ def test_make_and_delete_routes(config_fixture, start_proxy):
     pr.remove(pfx1)
     pr.remove(pfx2)
     assert len(pr.routes.keys()) == 0
+
