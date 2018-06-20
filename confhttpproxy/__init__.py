@@ -61,8 +61,23 @@ class ProxyRouter(object):
                 return prefix
         return None
 
-    def check(self) -> bool:
-        raise NotImplemented
+    def check(self, prefix: str) -> bool:
+        """Check if the current prefix still routes to some endpoint
+        (Sends HTTP HEAD request, fails if timeout or connection refused) """
+        if not prefix:
+            return False
+
+        routes = self.routes
+        pfx = prefix if prefix[0] == '/' else f'/{prefix}'
+        if pfx not in routes.keys():
+            return False
+
+        rt = routes[pfx].get('target')
+        try:
+            requests.head(rt, timeout=1.0)
+            return True
+        except:
+            return False
 
 
 class NullRouter(ProxyRouter):
@@ -87,5 +102,5 @@ class NullRouter(ProxyRouter):
     def check(self) -> bool:
         return True
 
-    def search(self, target: str) -> Optional[str]:
-        return None
+    def search(self, target: str) -> bool:
+        return False
