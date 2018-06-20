@@ -89,14 +89,21 @@ def test_check(config_fixture, start_proxy):
     pf3, host3 = pr.add("http://localhost:9911", f'not/real')
     pf4, host4 = pr.add("http://12.24.111.21:22", f'should/timeout')
 
+    r1 = pr.search("http://localhost:6666")
+    r2 = pr.search("http://localhost:5555")
+
     t0 = time.time()
     assert pr.check(pf1) is True
     assert pr.check(pf2) is True
+    assert pr.check(r1) is True
+    assert pr.check(r2) is True
+    assert pr.check('constant/x') is True
     assert pr.check(pf3) is False
     assert pr.check(pf4) is False
     t1 = time.time()
     # Check that timeouts timed-out super quickly
     assert t1 - t0 < 2.0
+
 
 def test_make_and_delete_routes(config_fixture, start_proxy):
     pr = ProxyRouter.get_proxy(config_fixture)
