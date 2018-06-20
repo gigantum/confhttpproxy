@@ -53,6 +53,14 @@ class ProxyRouter(object):
         raise ProxyRouterException(f'Cannot delete route {prefix}: '
                                    f'{r.status_code} {r.text}')
 
+    def search(self, target: str) -> Optional[str]:
+        """Search for the prefix given a target"""
+        routes = self.routes
+        for prefix in routes.keys():
+            if target == routes[prefix].get('target'):
+                return prefix
+        return None
+
     def check(self) -> bool:
         raise NotImplemented
 
@@ -78,3 +86,6 @@ class NullRouter(ProxyRouter):
 
     def check(self) -> bool:
         return True
+
+    def search(self, target: str) -> Optional[str]:
+        return None

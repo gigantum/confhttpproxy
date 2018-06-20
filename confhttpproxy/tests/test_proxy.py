@@ -3,6 +3,7 @@ import subprocess
 import pytest
 import time
 import requests
+import uuid
 
 from confhttpproxy import ProxyRouter, ProxyRouterException, NullRouter
 
@@ -11,6 +12,7 @@ from confhttpproxy import ProxyRouter, ProxyRouterException, NullRouter
 def config_fixture():
     yield {'api_host': 'localhost',
            'api_port': 88}
+
 
 @pytest.fixture
 def start_proxy():
@@ -37,6 +39,7 @@ def start_proxy():
         t1.kill()
         t2.kill()
 
+
 def test_null1():
     pr = ProxyRouter.get_proxy()
     assert type(pr) == NullRouter
@@ -53,7 +56,7 @@ def test_connect_to_internal_process_via_proxy_1(config_fixture, start_proxy):
     """ Create a route to proxy but specifify the route prefix. """
     pr = ProxyRouter.get_proxy(config_fixture)
     pfx, host = pr.add("http://localhost:5555", 'test/server/1')
-    assert host == 'http://localhost:5555')
+    assert host == 'http://localhost:5555'
     assert pfx in [p[1:] for p in pr.routes.keys()]
     assert 'spool' in requests.get(f'http://localhost/{pfx}').text
 
@@ -64,6 +67,19 @@ def test_connect_to_internal_process_via_proxy_2(config_fixture, start_proxy):
     pfx, host = pr.add("http://localhost:6666")
     assert pfx in [p[1:] for p in pr.routes.keys()]
     assert 'ldconfig' in requests.get(f'http://localhost/{pfx}').text
+
+
+def test_search(config_fixture, start_proxy):
+    rando = str(uuid.uuid4()).replace('-', '')[:6]
+    pr = ProxyRouter.get_proxy(config_fixture)
+    pf1, host1 = pr.add("http://localhost:6666")
+    pf2, host2 = pr.add("http://localhost:5555", f'constant/{rando}')
+
+    assert pr.search('cat') is None
+    assert pr.search('http://localhost:6666')[1:].isalnum()
+    assert pr.search('http://localhost:5555') == f'/constant/{rando}'
+    assert pr.search(pf1) is None
+    assert pr.search(pf2) is None
 
 
 def test_make_and_delete_routes(config_fixture, start_proxy):
